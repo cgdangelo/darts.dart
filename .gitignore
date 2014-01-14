@@ -1,0 +1,7 @@
+/web/*.css
+.sass-cache
+packages
+*.*~
+*.swp
+.DS_Store
+pubspec.lock
