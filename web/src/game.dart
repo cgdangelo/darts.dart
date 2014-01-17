@@ -5,6 +5,9 @@ class Game
   static const int CROSSHAIR_SIZE = 30;
   static const int BOARD_SIZE = 600;
 
+  static const int JITTER = 4;
+  static const int FOCUSING_JITTER = 2;
+
   CanvasElement gameBoard;
   CanvasRenderingContext2D ctx;
 
@@ -12,6 +15,9 @@ class Game
   ImageElement crosshairTexture;
 
   Point crosshairPosition = new Point((Game.BOARD_SIZE / 2) - (Game.CROSSHAIR_SIZE / 2), (Game.BOARD_SIZE / 2) - (Game.CROSSHAIR_SIZE / 2));
+
+  bool focusing = false;
+  bool recentlyFocused = false;
 
   Game(CanvasElement gameBoardElement)
   {
@@ -32,10 +38,26 @@ class Game
 
   void bindEvents()
   {
-    this.gameBoard.onMouseMove.listen((event) => this.handleMouseMove(event));
+    this.gameBoard.onMouseMove.listen((MouseEvent event) => this.handleMouseMove(event));
+
     new Timer.periodic(const Duration(milliseconds: 250), (Timer) {
       this.jitter();
       this.drawCrosshair();
+    });
+
+    document.onKeyDown.listen((KeyboardEvent event) {
+      if (event.shiftKey) {
+        this.focusing = true;
+        this.recentlyFocused = true;
+      }
+    });
+
+    document.onKeyUp.listen((KeyboardEvent event) {
+      if (!event.shiftKey) {
+        this.focusing = false;
+      }
+
+      new Timer(const Duration(seconds: 5), () => this.recentlyFocused = false);
     });
   }
 
@@ -52,17 +74,19 @@ class Game
 
   void jitter([Point movement])
   {
+    int jitter = this.focusing ? Game.FOCUSING_JITTER : Game.JITTER;
+
     Random rng = new Random();
 
     if (movement == null) {
       movement = new Point(
-        rng.nextInt(4),
-        rng.nextInt(4)
+        rng.nextInt(jitter),
+        rng.nextInt(jitter)
       );
     }
 
-    int jitterX = -movement.x * 4 + rng.nextInt((movement.x.abs() + 1) * 4);
-    int jitterY = -movement.y * 4 + rng.nextInt((movement.y.abs() + 1) * 4);
+    int jitterX = -movement.x * jitter + rng.nextInt((movement.x.abs() + 1) * jitter);
+    int jitterY = -movement.y * jitter + rng.nextInt((movement.y.abs() + 1) * jitter);
     this.crosshairPosition = new Point(
       this.crosshairPosition.x + jitterX,
       this.crosshairPosition.y + jitterY
