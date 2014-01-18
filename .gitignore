@@ -1,4 +1,4 @@
-/web/*.css
+/web/stylesheets/*.css
 .sass-cache
 packages
 *.*~
