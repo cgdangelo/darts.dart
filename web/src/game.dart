@@ -63,7 +63,11 @@ class Game
 
   void startFocusing()
   {
-    this.gameBoard.classes.add('focusing');
+    this.gameBoard.style
+      ..transform = 'scale(2)'
+      ..transformOriginX = this.crosshairPosition.x.toString() + 'px'
+      ..transformOriginY = this.crosshairPosition.y.toString() + 'px';
+
     this.focusing = true;
     new Future.delayed(const Duration(seconds: Game.FOCUS_DURATION), () {
       this.stopFocusing();
@@ -72,7 +76,7 @@ class Game
 
   void stopFocusing()
   {
-    this.gameBoard.classes.remove('focusing');
+    this.gameBoard.style.transform = 'scale(1)';
     this.focusing = false;
     this.recentlyFocused = true;
     new Future.delayed(const Duration(seconds: Game.FOCUS_COOLDOWN), () => this.recentlyFocused = false);
