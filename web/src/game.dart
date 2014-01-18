@@ -8,6 +8,9 @@ class Game
   static const int JITTER = 4;
   static const int FOCUSING_JITTER = 2;
 
+  static const int FOCUS_DURATION = 2;
+  static const int FOCUS_COOLDOWN = 5;
+
   CanvasElement gameBoard;
   CanvasRenderingContext2D ctx;
 
@@ -60,17 +63,19 @@ class Game
 
   void startFocusing()
   {
+    this.gameBoard.classes.add('focusing');
     this.focusing = true;
-    new Future.delayed(const Duration(seconds: 1), () {
+    new Future.delayed(const Duration(seconds: Game.FOCUS_DURATION), () {
       this.stopFocusing();
     });
   }
 
   void stopFocusing()
   {
+    this.gameBoard.classes.remove('focusing');
     this.focusing = false;
     this.recentlyFocused = true;
-    new Future.delayed(const Duration(seconds: 5), () => this.recentlyFocused = false);
+    new Future.delayed(const Duration(seconds: Game.FOCUS_COOLDOWN), () => this.recentlyFocused = false);
   }
 
   void handleMouseMove(MouseEvent event)

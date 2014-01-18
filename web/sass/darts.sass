@@ -1,3 +1,6 @@
+@import 'compass/css3/transition'
+@import 'compass/css3/transform'
+
 body
   font-family: 'Open Sans'
   margin: 0
@@ -5,9 +8,16 @@ body
   text-align: center
 
 #game
+  +transition-property(transform)
+  +transition-timing-function(ease)
+  +transition-duration(1s)
+
   margin: auto
   width: 600px
   height: 600px
-  background: url(textures/dartboard.jpg) 0 0
+  background: image-url('dartboard.jpg') 0 0
   background-size: contain
   cursor: none
+  
+  &.focusing
+    +transform(scale(2.0))
