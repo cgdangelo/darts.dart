@@ -46,19 +46,31 @@ class Game
     });
 
     document.onKeyDown.listen((KeyboardEvent event) {
-      if (event.shiftKey) {
-        this.focusing = true;
-        this.recentlyFocused = true;
+      if (event.shiftKey && !this.recentlyFocused) {
+        this.startFocusing();
       }
     });
 
     document.onKeyUp.listen((KeyboardEvent event) {
-      if (!event.shiftKey) {
-        this.focusing = false;
+      if (!event.shiftKey && this.focusing) {
+        this.stopFocusing();
       }
-
-      new Timer(const Duration(seconds: 5), () => this.recentlyFocused = false);
     });
+  }
+
+  void startFocusing()
+  {
+    this.focusing = true;
+    new Future.delayed(const Duration(seconds: 1), () {
+      this.stopFocusing();
+    });
+  }
+
+  void stopFocusing()
+  {
+    this.focusing = false;
+    this.recentlyFocused = true;
+    new Future.delayed(const Duration(seconds: 5), () => this.recentlyFocused = false);
   }
 
   void handleMouseMove(MouseEvent event)
