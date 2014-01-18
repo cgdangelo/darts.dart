@@ -17,21 +17,24 @@ class Game
   ImageElement boardTexture;
   ImageElement crosshairTexture;
 
-  Point crosshairPosition = new Point((Game.BOARD_SIZE / 2) - (Game.CROSSHAIR_SIZE / 2), (Game.BOARD_SIZE / 2) - (Game.CROSSHAIR_SIZE / 2));
+  Point crosshairPosition = new Point(
+    (Game.BOARD_SIZE / 2) - (Game.CROSSHAIR_SIZE / 2),
+    (Game.BOARD_SIZE / 2) - (Game.CROSSHAIR_SIZE / 2)
+  );
 
   bool focusing = false;
   bool recentlyFocused = false;
 
-  Game(CanvasElement gameBoardElement)
+  Game(this.gameBoard)
   {
-    this.gameBoard = gameBoardElement;
-    this.ctx = this.gameBoard.getContext('2d');
+    this.ctx = this.gameBoard.context2D;
   }
 
   void init()
   {
-    this.loadTextures();
-    this.bindEvents();
+    this
+      ..loadTextures()
+      ..bindEvents();
   }
 
   void loadTextures()
@@ -41,11 +44,14 @@ class Game
 
   void bindEvents()
   {
-    this.gameBoard.onMouseMove.listen((MouseEvent event) => this.handleMouseMove(event));
+    this.gameBoard.onMouseMove.listen(
+      (MouseEvent event) => this.handleMouseMove(event)
+    );
 
     new Timer.periodic(const Duration(milliseconds: 250), (Timer) {
-      this.jitter();
-      this.drawCrosshair();
+      this
+        ..jitter()
+        ..drawCrosshair();
     });
 
     document.onKeyDown.listen((KeyboardEvent event) {
@@ -63,12 +69,13 @@ class Game
 
   void startFocusing()
   {
+    this.focusing = true;
+
     this.gameBoard.style
       ..transform = 'scale(2)'
       ..transformOriginX = this.crosshairPosition.x.toString() + 'px'
       ..transformOriginY = this.crosshairPosition.y.toString() + 'px';
 
-    this.focusing = true;
     new Future.delayed(const Duration(seconds: Game.FOCUS_DURATION), () {
       this.stopFocusing();
     });
@@ -76,9 +83,11 @@ class Game
 
   void stopFocusing()
   {
-    this.gameBoard.style.transform = 'scale(1)';
-    this.focusing = false;
-    this.recentlyFocused = true;
+    this
+      ..gameBoard.style.transform = 'scale(1)'
+      ..focusing = false
+      ..recentlyFocused = true;
+
     new Future.delayed(const Duration(seconds: Game.FOCUS_COOLDOWN), () => this.recentlyFocused = false);
   }
 
@@ -89,8 +98,9 @@ class Game
         event.offset.y - (Game.CROSSHAIR_SIZE / 2)
     );
 
-    this.jitter(event.movement);
-    this.drawCrosshair();
+    this
+      ..jitter(event.movement)
+      ..drawCrosshair();
   }
 
   void jitter([Point movement])
@@ -106,8 +116,12 @@ class Game
       );
     }
 
-    int jitterX = -movement.x * jitter + rng.nextInt((movement.x.abs() + 1) * jitter);
-    int jitterY = -movement.y * jitter + rng.nextInt((movement.y.abs() + 1) * jitter);
+    int jitterX = -movement.x * jitter +
+      rng.nextInt((movement.x.abs() + 1) * jitter);
+
+    int jitterY = -movement.y * jitter +
+      rng.nextInt((movement.y.abs() + 1) * jitter);
+
     this.crosshairPosition = new Point(
       this.crosshairPosition.x + jitterX,
       this.crosshairPosition.y + jitterY
@@ -116,7 +130,12 @@ class Game
 
   void drawCrosshair()
   {
-    this.ctx.clearRect(0, 0, 600, 600);
-    this.ctx.drawImageScaled(this.crosshairTexture, this.crosshairPosition.x, this.crosshairPosition.y, Game.CROSSHAIR_SIZE, Game.CROSSHAIR_SIZE);
+    this.ctx
+      ..clearRect(0, 0, 600, 600)
+      ..drawImageScaled(
+        this.crosshairTexture,
+        this.crosshairPosition.x, this.crosshairPosition.y,
+        Game.CROSSHAIR_SIZE, Game.CROSSHAIR_SIZE
+      );
   }
 }
